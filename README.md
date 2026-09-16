@@ -1,12 +1,16 @@
-# Pot Plant Robot
+# Photosynthetic Agency
 
-A pot plant on a two-wheel chassis that roams an indoor room looking after
-itself. It hunts for the light it prefers, wants attention, asks to be watered,
-and rests when it is tired. It shows how it is feeling on an 8x8 LED face.
+A swarm of five mobile plants on two-wheel robotic platforms. Each carries its
+own light and CO2 sensors and navigates autonomously, seeking the conditions it
+needs to photosynthesise. The robots are prosthetic bodies, extending the plants'
+capacity to sense and act.
 
-Eventually there are **two** of them running identical firmware - a sun-loving
-jade and a shade-loving orchid - which behave completely differently because one
-file of numbers differs. That is the point of the whole thing.
+All five run **identical firmware**. They behave differently because one file of
+constants differs between them - which is the point.
+
+Because indoor CO2 comes from human breath rather than from plants, a
+CO2-seeking plant seeks out *people*. The approach is gas exchange, not
+affection. See [`docs/concept.md`](docs/concept.md).
 
 Written to be read by someone who has not done this before.
 
