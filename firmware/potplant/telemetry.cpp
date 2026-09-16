@@ -8,15 +8,17 @@
 
 void telemetryHeader() {
   Serial.println(F("# potplant telemetry. Lines starting with # are notes, not data."));
-  Serial.println(F("ms,ldrL,ldrC,ldrR,err,dist,pir,touch,light,warmth,affection,water,rest,spdL,spdR,state,mood"));
+  Serial.println(F("ms,ldrFL,ldrFR,ldrBR,ldrBL,steer,fb,dist,pir,touch,light,warmth,affection,water,rest,spdL,spdR,state,mood"));
 }
 
 void telemetryLine(const LightReading &light, const char *state, const char *mood) {
-  Serial.print(millis());       Serial.print(',');
-  Serial.print(light.left);     Serial.print(',');
-  Serial.print(light.centre);   Serial.print(',');
-  Serial.print(light.right);    Serial.print(',');
-  Serial.print(light.error);    Serial.print(',');
+  Serial.print(millis());         Serial.print(',');
+  Serial.print(light.fl);         Serial.print(',');
+  Serial.print(light.fr);         Serial.print(',');
+  Serial.print(light.br);         Serial.print(',');
+  Serial.print(light.bl);         Serial.print(',');
+  Serial.print(light.steer);      Serial.print(',');
+  Serial.print(light.frontBack);  Serial.print(',');
 
   // dist, pir, touch - Phase 2 and 3. Empty for now.
   Serial.print(F(",,,"));
@@ -24,8 +26,8 @@ void telemetryLine(const LightReading &light, const char *state, const char *moo
   // light, warmth, affection, water, rest - the needs model, Phase 2 onwards.
   Serial.print(F(",,,,,"));
 
-  Serial.print(driveLeft());    Serial.print(',');
-  Serial.print(driveRight());   Serial.print(',');
-  Serial.print(state);          Serial.print(',');
+  Serial.print(driveLeft());      Serial.print(',');
+  Serial.print(driveRight());     Serial.print(',');
+  Serial.print(state);            Serial.print(',');
   Serial.println(mood);
 }

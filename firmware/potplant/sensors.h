@@ -6,19 +6,22 @@
 // ---------------------------------------------------------------------------
 // sensors.h - reading the world
 //
-// Right now this is only the three light sensors. Phase 2 adds the ultrasonic
-// distance sensor, Phase 3 the motion and touch sensors. They will all land in
-// this one file so the rest of the code never talks to a pin directly.
+// Right now this is only the four light sensors. Phase 2 adds the ultrasonic
+// module and the cliff sensors, Phase 3 motion and touch. They all land in this
+// one file so the rest of the code never talks to a pin directly.
 // ---------------------------------------------------------------------------
 
-// One set of light readings, already smoothed, calibrated, and turned the
-// right way up so that a BIGGER number always means BRIGHTER.
+// One set of light readings, smoothed, calibrated, and turned the right way up
+// so that a BIGGER number always means BRIGHTER.
 struct LightReading {
-  int left;       // 0 - 1023
-  int centre;
-  int right;
-  int error;      // right minus left. Positive means brighter to the right.
-  int brightest;  // whichever of the three is reading highest
+  int fl, fr, br, bl;   // the four corners, 0 - 1023
+
+  // Two comparisons the steering actually uses, worked out once here rather
+  // than recalculated wherever they are needed.
+  int steer;      // (right side) - (left side). Positive means brighter right.
+  int frontBack;  // (front) - (back).          Positive means brighter ahead.
+
+  int brightest;  // the strongest single corner
 };
 
 void sensorsBegin();

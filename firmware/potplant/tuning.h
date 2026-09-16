@@ -43,10 +43,13 @@ const unsigned long CALIBRATE_COVER_MS   = 4000;
 const int CALIBRATE_MIN_SWING = 40;
 
 // --- Seeking the light -------------------------------------------------------
-// If the difference between the left and right sensors is smaller than this,
-// treat it as "even" and drive straight. Without a deadband the robot weaves
-// constantly, chasing meaningless noise.
-const int LIGHT_DEADBAND = 12;
+// If the difference between the two sides is smaller than this, treat it as
+// "even" and drive straight. Without a deadband the robot weaves constantly,
+// chasing meaningless noise.
+//
+// Note this compares the sum of two sensors per side, not one, so the numbers
+// here are roughly twice what they would be with a single sensor each side.
+const int LIGHT_DEADBAND = 24;
 
 // If even the brightest sensor reads below this, there is no useful light
 // gradient to follow and the robot searches instead of seeking.
@@ -56,6 +59,23 @@ const int LIGHT_FLOOR = 60;
 // brightness difference suggests". 50 is half as eager, 200 is twice as eager
 // and will overshoot and weave.
 const int STEER_GAIN_PERCENT = 60;
+
+// --- Turning round ------------------------------------------------------------
+// Four corner sensors let the robot notice that the light is BEHIND it, which
+// three forward-facing sensors could never do. When the back pair beat the front
+// pair by this much, it turns round rather than driving hopefully onward.
+const int LIGHT_BEHIND_THRESHOLD = 40;
+
+// Once it has started turning, it keeps going until the front pair beat the back
+// pair by this much. Requiring more to stop than to start is what stops it
+// dithering back and forth when the light is exactly off to one side.
+const int LIGHT_AHEAD_THRESHOLD = 25;
+
+// How fast it spins while turning round, and how long before it gives up and
+// goes back to driving. Without the timeout a robot in an evenly lit room can
+// spin for ever.
+const uint8_t TURN_SPEED = 85;
+const unsigned long TURN_TIMEOUT_MS = 3000;
 
 // --- Motor speeds (0 to 255) --------------------------------------------------
 // Cruising speed when driving straight towards light.

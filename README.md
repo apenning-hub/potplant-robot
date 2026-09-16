@@ -65,10 +65,11 @@ Monitor in the Arduino IDE, or:
 Lines starting with `#` are notes. Every other line is one comma separated
 reading:
 
-    ms,ldrL,ldrC,ldrR,err,dist,pir,touch,light,warmth,affection,water,rest,spdL,spdR,state,mood
+    ms,ldrFL,ldrFR,ldrBR,ldrBL,steer,fb,dist,pir,touch,light,warmth,affection,water,rest,spdL,spdR,state,mood
 
-Columns for things that do not exist yet are left empty. The format will not
-change for the rest of the project, so any tool written against it keeps working.
+`steer` compares the two sides and `fb` compares front against back. Columns for
+things that do not exist yet are left empty. The format is fixed from here on, so
+any tool written against it keeps working.
 
 The Arduino IDE's **Serial Plotter** draws these as live graphs, which is by far
 the easiest way to see whether a sensor is working.
@@ -89,7 +90,7 @@ Some good first experiments:
 
 ## Phases
 
-1. **Light seeker** - motors and light sensors only. *(built)*
+1. **Light seeker** - motors and four corner light sensors. *(built)*
 2. Obstacles, **cliff detection**, the needs model, and the LED face.
    The light need seeks a *target* brightness from the start, not a maximum.
 3. Affection - touch and motion. A pat is worth far more than company.

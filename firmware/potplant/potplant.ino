@@ -7,9 +7,9 @@
 // numbers. Everything later is built on top of those two facts.
 //
 // How it works, once per tick (20 times a second):
-//   1. read the three light sensors
-//   2. compare left against right
-//   3. steer towards the brighter side
+//   1. read the four corner light sensors
+//   2. compare the two sides, and the front against the back
+//   3. steer towards the brighter side - or turn round if the light is behind
 //   4. occasionally report what it is doing over USB
 //
 // There is no delay() in the loop. delay() means "freeze completely", and a
@@ -30,9 +30,10 @@
 #include "drive.h"
 #include "telemetry.h"
 
-// The two things the robot can be doing in Phase 1.
+// The three things the robot can be doing in Phase 1.
 enum State {
-  STATE_SEEK,     // it can see a light, and is driving towards it
+  STATE_SEEK,     // it can see a light ahead, and is driving towards it
+  STATE_TURN,     // the light is behind it, so it is turning round
   STATE_SEARCH    // too dark to tell, so turn slowly and look around
 };
 
@@ -44,6 +45,11 @@ static uint8_t tickCounter = 0;
 // try the other direction.
 static unsigned long searchStarted = 0;
 static int searchDirection = 1;
+
+// Used by STATE_TURN: which way it chose to spin, and when it started, so it
+// can give up rather than spinning for ever in an evenly lit room.
+static int turnDirection = 1;
+static unsigned long turnStarted = 0;
 
 // How much RAM is left over. The UNO has 2048 bytes in total and it runs out
 // long before the 32 KB of program space does, so this number is worth
@@ -59,7 +65,7 @@ void setup() {
   while (!Serial) { ; }   // only matters on boards with native USB
 
   Serial.println();
-  Serial.println(F("# pot plant robot - phase 1, light seeker"));
+  Serial.println(F("# pot plant robot - phase 1, light seeker, four corner sensors"));
   Serial.print(F("# free RAM at start-up: "));
   Serial.print(freeRam());
   Serial.println(F(" bytes of 2048"));
@@ -78,8 +84,8 @@ void setup() {
 
 // Work out motor speeds from a set of light readings.
 static void seekLight(const LightReading &light) {
-  // error is positive when the right sensor sees more light than the left.
-  int error = light.error;
+  // steer is positive when the right-hand pair see more light than the left.
+  int error = light.steer;
 
   // Small differences are just noise. Ignore them, or the robot weaves.
   if (abs(error) < LIGHT_DEADBAND) error = 0;
@@ -94,6 +100,12 @@ static void seekLight(const LightReading &light) {
   int right = (int)DRIVE_BASE_SPEED - steer;
 
   driveSetTargets(left, right);
+}
+
+// Spin on the spot towards whichever side the light is on, until it is in front.
+static void turnRound() {
+  driveSetTargets( (int)TURN_SPEED * turnDirection,
+                  -(int)TURN_SPEED * turnDirection );
 }
 
 // Spin slowly on the spot, reversing every so often, hunting for any light.
@@ -115,26 +127,47 @@ void loop() {
   sensorsUpdate();
   LightReading light = sensorsLight();
 
-  // Decide which state we are in. There is deliberately a gap between the two
-  // thresholds so that a reading hovering right on the boundary does not make
-  // the robot flip between seeking and searching several times a second.
-  if (state == STATE_SEEK && light.brightest < LIGHT_FLOOR) {
-    state = STATE_SEARCH;
-    searchStarted = millis();
+  // Decide which state we are in.
+  //
+  // Too dark to steer by comes first - without useful light, nothing else is
+  // worth deciding. There is deliberately a gap between the threshold for
+  // giving up and the one for starting again, so a reading sitting right on the
+  // boundary does not flip the robot between states several times a second.
+  if (light.brightest < LIGHT_FLOOR) {
+    if (state != STATE_SEARCH) {
+      state = STATE_SEARCH;
+      searchStarted = millis();
+    }
   } else if (state == STATE_SEARCH && light.brightest > LIGHT_FLOOR + LIGHT_DEADBAND) {
     state = STATE_SEEK;
   }
 
-  if (state == STATE_SEEK) {
-    seekLight(light);
-  } else {
-    searchForLight();
+  if (state == STATE_SEEK && light.frontBack < -LIGHT_BEHIND_THRESHOLD) {
+    // The back pair are clearly beating the front pair - the light is behind.
+    // Turn towards whichever side is brighter, so it takes the shorter way
+    // round rather than always spinning the same direction.
+    state = STATE_TURN;
+    turnDirection = (light.steer >= 0) ? 1 : -1;
+    turnStarted = millis();
+  } else if (state == STATE_TURN) {
+    bool nowInFront = light.frontBack > LIGHT_AHEAD_THRESHOLD;
+    bool givenUp    = millis() - turnStarted > TURN_TIMEOUT_MS;
+    if (nowInFront || givenUp) state = STATE_SEEK;
+  }
+
+  switch (state) {
+    case STATE_SEEK:   seekLight(light);   break;
+    case STATE_TURN:   turnRound();        break;
+    case STATE_SEARCH: searchForLight();   break;
   }
 
   driveUpdate();
 
   if (++tickCounter >= TELEMETRY_EVERY_N_TICKS) {
     tickCounter = 0;
-    telemetryLine(light, state == STATE_SEEK ? "SEEK" : "SEARCH", "none");
+    const char *name = "SEARCH";
+    if (state == STATE_SEEK) name = "SEEK";
+    else if (state == STATE_TURN) name = "TURN";
+    telemetryLine(light, name, "none");
   }
 }
