@@ -61,6 +61,41 @@ Arduino's AVR compiler is still an Intel program, so it needs Rosetta:
 
 This is a one-off. Without it you get `bad CPU type in executable`.
 
+## Testing the hardware first
+
+Before running the robot, there is a separate diagnostic sketch:
+`firmware/sensor_test/`. It is one self-contained file - open it in the Arduino
+IDE and press Upload.
+
+It exists so you can check each piece of hardware works before trusting it, and
+so you can find out which motor is plugged into which terminal without guessing.
+
+Open the Serial Monitor at **115200**, then type a letter and press Enter:
+
+| Key | Does |
+|---|---|
+| `l` | Live light readings, drawn as bars. Wave a torch. |
+| `r` | 20-second range test. **Prints suggested values for `tuning.h`.** |
+| `m` | Motor sweep - runs all four channels in turn so you can see which wheel is which |
+| `1`-`4` | Run one motor channel |
+| `u` | Ultrasonic distance |
+| `i` | Scan the I2C bus and name any devices it finds |
+| `p` | Read A4/A5 as digital inputs |
+| `f` | Free memory |
+| `x` | Stop everything |
+| `?` | The menu again |
+
+Wheels off the ground before any motor test. Prop the chassis on a book.
+
+The range test is the useful one. Cover and uncover each sensor, shine a torch
+at them, and it reports what range each channel actually saw - then suggests
+`LIGHT_FLOOR` and `LIGHT_DEADBAND` values based on your real hardware and your
+real room, rather than my guesses. If a channel barely moves it says so, and
+lists the likely causes.
+
+Unlike the robot firmware, this sketch uses `delay()` freely. Nothing in it has
+to react to anything, and blocking makes a test rig far easier to read.
+
 ## Watching it think
 
 Once uploaded, the robot reports itself over the USB cable. Open the Serial
