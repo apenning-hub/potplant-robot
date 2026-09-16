@@ -187,3 +187,66 @@ sensor bus works" - which is a better thing for students to learn, and cheaper.
 **Still to check:** cliff sensors are safety critical and an expander adds polling
 latency. At a 20 Hz tick the robot moves only a few millimetres per tick, so it
 is probably fine, but cliff sensors should get direct pins if any are spare.
+
+---
+
+## Four light sensors, at the corners
+
+Settled: **four LDRs, one at each corner** - front-left, front-right, back-right,
+back-left - rather than three facing forward.
+
+The reason is that three forward-facing sensors cannot tell a dark room from a
+window behind them. Both read as "dim ahead". With four, the robot knows light is
+*behind* it and can turn round, which matters a great deal for a machine whose
+entire first behaviour is finding light.
+
+This is the arrangement the original Tech Talkies sketch used, and it was the
+right call.
+
+### The pin map this forces
+
+Four LDRs take A0 to A3, which leaves A4 and A5 as the only analogue pins - and
+those are the I2C pins. So the sensor bus is no longer a Phase 5 idea to consider.
+It is the only way the rest of the project fits.
+
+| Pin | Carries |
+|---|---|
+| A0, A1, A2, A3 | LDR front-left, front-right, back-right, back-left |
+| A4, A5 | **I2C bus** - humidity, lux, UV, and the GPIO expander |
+| D2 | Ultrasonic, **single-pin mode** |
+| D9, D10, D13 | LED matrix DIN, CS, CLK |
+| D3-D8, D11, D12 | Motor shield |
+| D0, D1 | USB serial, never use |
+| Expander pin 0, 1 | Cliff sensor left, right |
+| Expander pin 2 | PIR motion |
+| Expander pin 3 | Touch pad |
+| Expander pin 4-7 | Spare |
+
+### Two things that make this work
+
+**The ultrasonic runs on one pin, not two.** An HC-SR04 normally wants a separate
+trigger and echo, and there is no second pin to give it. Trigger and echo can be
+tied together through a 1k resistor and driven from a single pin; the NewPing
+library supports this directly. Without that trick the map does not close.
+
+**The echo pin cannot go on the expander.** The measurement *is* the width of the
+echo pulse, timed in microseconds. An I2C round trip destroys it. Anything
+requiring microsecond timing needs a real pin - which is why the ultrasonic gets
+D2 and the slow digital sensors get the expander.
+
+### A safety consequence: cliff detection must bypass the slew limiter
+
+The slew limiter eases motor speed by `DRIVE_SLEW_PER_TICK` each tick so the
+gearboxes are not slammed. From cruising speed that is roughly seven ticks, about
+350 ms, to reach a stop - during which the robot travels something like five
+centimetres.
+
+That is enough to carry it over the edge of a step.
+
+So the cliff override must **set the actual motor speed to zero immediately**,
+not ask the slew limiter to ease towards it. Graceful movement is for ordinary
+behaviour. An emergency stop is not ordinary behaviour.
+
+The polling latency of reading the cliff sensors over I2C is negligible by
+comparison - well under a millisecond - so putting them on the expander is fine.
+The tick rate and the slew limiter are the real risks, not the bus.

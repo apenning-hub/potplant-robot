@@ -96,13 +96,13 @@ Every pin on the UNO, accounted for. Phase 1 uses the ones marked "now".
 
 | Pin | Use | When |
 |---|---|---|
-| A0 | LDR left | now |
-| A1 | LDR centre | now |
-| A2 | LDR right | now |
-| A3 | Ultrasonic echo | Phase 2 |
-| A4 | PIR motion | Phase 3 |
-| A5 | Touch pad | Phase 3 |
-| D2 | Ultrasonic trigger | Phase 2 |
+| A0 | LDR front-left | now |
+| A1 | LDR front-right | now |
+| A2 | LDR back-right | now |
+| A3 | LDR back-left | now |
+| A4 | I2C data (SDA) | Phase 3 |
+| A5 | I2C clock (SCL) | Phase 3 |
+| D2 | Ultrasonic, single-pin mode | Phase 2 |
 | D9 | LED matrix DIN | Phase 2 |
 | D10 | LED matrix CS | Phase 2 |
 | D13 | LED matrix CLK | Phase 2 |
