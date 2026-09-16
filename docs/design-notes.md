@@ -172,7 +172,7 @@ Different jobs.
 
 ---
 
-## Phase 5 is probably I2C, not a Mega
+## The I2C bus is needed from Phase 2, not Phase 5
 
 Nearly every sensor above speaks **I2C**, and I2C is a bus - humidity, lux, UV,
 a colour sensor and a clock can all share the same two wires. Five sensors, two
@@ -181,8 +181,17 @@ pins.
 Those two pins are A4 and A5, currently allocated to the PIR and the touch pad.
 A small I2C GPIO expander hands those back with pins to spare, on the same bus.
 
-So the Phase 5 conversation is likely not "buy a bigger board" but "here is how a
-sensor bus works" - which is a better thing for students to learn, and cheaper.
+**Corrected after working the pin map through properly.** This was written as a
+Phase 5 concern. It is not. Four LDRs take A0-A3, the ultrasonic takes D2 and the
+matrix takes D9, D10 and D13 - so the cliff sensors in *Phase 2* already have
+nowhere to live except A4 and A5, which are the I2C pins.
+
+They could be squeezed on as plain digital inputs, but Phase 3's PIR and touch
+pad would then have nowhere, and A4/A5 would have to be handed back to I2C in any
+case. Buy the expander at Phase 2 and wire everything once.
+
+So the conversation was never "buy a bigger board". It is "here is how a sensor
+bus works" - a better thing for students to learn, and cheaper.
 
 **Still to check:** cliff sensors are safety critical and an expander adds polling
 latency. At a 20 Hz tick the robot moves only a few millimetres per tick, so it

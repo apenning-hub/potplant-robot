@@ -30,10 +30,23 @@ the original brief. Treat the totals as a budgeting guide, not a quote.
 | [ ] | 8x8 LED matrix, MAX7219 | **XC4499**. The face. | ~$20 |
 | [ ] | HC-SR04 ultrasonic module | Obstacle distance | ~$8 |
 | [ ] | 2x IR reflectance sensor module | TCRT5000 type. **Cliff detection.** Same parts also read boundary tape. | ~$6 ea |
+| [ ] | **PCF8574 I2C expander** | **Needed from Phase 2, not Phase 5.** See below. | ~$6 |
 | [ ] | 4xAA battery holder with leads | Into EXT_PWR. Motors only. | ~$4 |
 | [ ] | Rechargeable AA cells + charger | **Get these.** A robot like this eats alkalines. | ~$40 |
 
 Cliff sensors are not optional. Stairs will destroy this robot.
+
+### Why the expander moved forward a phase
+
+Four LDRs take A0 to A3. The ultrasonic takes D2, and the matrix takes D9, D10
+and D13. That accounts for everything except A4 and A5 - the I2C pins.
+
+So the cliff sensors already have nowhere to go. They could be squeezed onto
+A4 and A5 as plain digital inputs, but then the PIR and touch pad in Phase 3
+have nowhere, and A4/A5 have to be handed back to I2C anyway.
+
+Cheaper and far less confusing to buy the expander now and put everything from
+the cliff sensors onward on the bus, rather than wiring things twice.
 
 ---
 
@@ -56,7 +69,6 @@ All of these speak I2C, so they share two wires rather than needing a pin each.
 | [ ] | AHT20 or SHT31 breakout | Humidity **and** temperature in one part | ~$12 |
 | [ ] | BH1750 or VEML7700 breakout | Real lux, so targets can be in actual units | ~$10 |
 | [ ] | LTR390 UV breakout | Tells direct sun from a bright wall. What lets the orchid flee sunbeams. | ~$14 |
-| [ ] | PCF8574 I2C expander | Hands back the pins the PIR and touch pad currently use | ~$6 |
 
 ---
 
@@ -110,8 +122,8 @@ A complete duplicate. This is the expensive phase.
 
 | Stage | Est. |
 |---|---|
-| Phases 2-3, first robot complete | **~$110** |
-| Phase 5 sensors | **~$42** |
+| Phases 2-3, first robot complete | **~$116** |
+| Phase 5 sensors | **~$36** |
 | Phase 6, second robot and both plants | **~$230** |
 | Experiments and consumables | **~$80** |
 
