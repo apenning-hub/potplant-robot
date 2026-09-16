@@ -63,38 +63,54 @@ This is a one-off. Without it you get `bad CPU type in executable`.
 
 ## Testing the hardware first
 
-Before running the robot, there is a separate diagnostic sketch:
-`firmware/sensor_test/`. It is one self-contained file - open it in the Arduino
-IDE and press Upload.
+Before running the robot, there is a test bench. It is in two halves:
 
-It exists so you can check each piece of hardware works before trusting it, and
-so you can find out which motor is plugged into which terminal without guessing.
+    firmware/sensor_test/   a small sketch that answers questions
+    tools/bench.py          the actual test bench, which runs on your computer
 
-Open the Serial Monitor at **115200**, then type a letter and press Enter:
+Upload the sketch **once** - Arduino IDE, or `arduino-cli compile/upload` - then
+leave it alone. Everything else lives in the Python, so changing how a test works
+costs nothing: edit the file, run it again. No compiling, no uploading.
 
-| Key | Does |
-|---|---|
-| `l` | Live light readings, drawn as bars. Wave a torch. |
-| `r` | 20-second range test. **Prints suggested values for `tuning.h`.** |
-| `m` | Motor sweep - runs all four channels in turn so you can see which wheel is which |
-| `1`-`4` | Run one motor channel |
-| `u` | Ultrasonic distance |
-| `i` | Scan the I2C bus and name any devices it finds |
-| `p` | Read A4/A5 as digital inputs |
-| `f` | Free memory |
-| `x` | Stop everything |
-| `?` | The menu again |
+One-off setup:
+
+    python3 -m pip install --user pyserial
+
+Then:
+
+    python3 tools/bench.py
+
+It finds the board by itself. Pass a port if you need to override it.
+
+| | Test | What it gives you |
+|---|---|---|
+| 1 | Live light | Four bars that move as you wave a torch, plus the steer and front/back figures the robot actually steers on |
+| 2 | **Range test** | Cover and uncover each sensor for 20 s, and it prints `LIGHT_FLOOR` and `LIGHT_DEADBAND` values calculated from your hardware |
+| 3 | **Motor identification** | Runs each channel in turn and asks which wheel moved, then prints the `config.h` lines |
+| 4 | Ultrasonic | Live distance |
+| 5 | I2C scan | Lists devices by address and names the ones this project expects |
+| 6 | Spare pins | A4/A5 as digital, for testing a touch pad before the expander is fitted |
+| 7 | Free memory | On the board |
 
 Wheels off the ground before any motor test. Prop the chassis on a book.
 
-The range test is the useful one. Cover and uncover each sensor, shine a torch
-at them, and it reports what range each channel actually saw - then suggests
-`LIGHT_FLOOR` and `LIGHT_DEADBAND` values based on your real hardware and your
-real room, rather than my guesses. If a channel barely moves it says so, and
-lists the likely causes.
+### Why Python cannot run on the Arduino
 
-Unlike the robot firmware, this sketch uses `delay()` freely. Nothing in it has
-to react to anything, and blocking makes a test rig far easier to read.
+It is a fair question. An ATmega328P has two kilobytes of memory - the Python
+interpreter alone would not fit, by a wide margin. So the board is programmed in
+C++ and *driven* from Python over the USB cable.
+
+The split is deliberate. The board does only what must happen on the board:
+reading pins, driving motors, timing an ultrasonic echo in microseconds.
+Everything else - drawing bars, working out ranges, suggesting values, walking
+you through the motors - is Python, where it can be changed in seconds.
+
+### The deadman
+
+While a motor test is running, the board stops the motors by itself if Python
+goes quiet for more than 1.5 seconds. Close the window, pull the cable, crash the
+script - the robot stops rather than driving off the bench. Worth knowing the
+safety is in the firmware, not in the script that might be the thing that failed.
 
 ## Watching it think
 
