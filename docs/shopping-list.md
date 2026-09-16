@@ -1,143 +1,113 @@
 # Shopping list
 
-Grouped by the phase that needs it, so you can buy as you go rather than all at
-once. Tick things off as they arrive.
+Five robots. Everything bought online in bulk - Jaycar charges roughly three to
+five times these prices for generic breakout modules, and nothing here is needed
+this week except what you already have.
 
-**Prices are rough estimates in AUD and should be checked.** I have not verified
-current Jaycar stock or pricing - the two part numbers below are the ones from
-the original brief. Treat the totals as a budgeting guide, not a quote.
+**Prices are rough estimates in AUD and have not been checked.** Treat the totals
+as a budgeting guide, not a quote.
 
 ---
 
 ## Already have
 
-- [x] Arduino UNO R3 clone (ATmega328P)
-- [x] Funduino motor control shield v1.0 (two L293D, one 74HC595)
-- [x] Duinotech 2WD chassis, **XC4472** - two TT gear motors, 65 mm wheels, castor
-- [x] LDRs on a breadboard with divider resistors
-- [x] Dupont jumpers, breadboard, assorted resistors
+- [x] Five Arduino UNO boards
+- [x] One Funduino motor control shield v1.0 (two L293D, one 74HC595)
+- [x] One Duinotech 2WD chassis, **XC4472** - TT gear motors, 65 mm wheels, castor
+- [x] LDRs, resistors, breadboard, Dupont jumpers
 
-> **Check before buying:** how many LDRs do you actually have wired, three or
-> four? The tutorial this started from uses four, one at each corner. See
-> "Open questions" at the bottom - it changes what else fits.
+> **Unconfirmed:** how many motor shields and chassis you have. If it is one of
+> each, add four of each below.
 
 ---
 
-## Phase 2 - obstacles, cliffs and the face
+## Per robot - the core build
 
-| | Item | Notes | Est. |
+| | Item | Why | Est. |
 |---|---|---|---|
-| [ ] | 8x8 LED matrix, MAX7219 | **XC4499**. The face. | ~$20 |
-| [ ] | HC-SR04 ultrasonic module | Obstacle distance | ~$8 |
-| [ ] | 2x IR reflectance sensor module | TCRT5000 type. **Cliff detection.** Same parts also read boundary tape. | ~$6 ea |
-| [ ] | **PCF8574 I2C expander** | **Needed from Phase 2, not Phase 5.** See below. | ~$6 |
-| [ ] | 4xAA battery holder with leads | Into EXT_PWR. Motors only. | ~$4 |
-| [ ] | Rechargeable AA cells + charger | **Get these.** A robot like this eats alkalines. | ~$40 |
+| [ ] | 4x LDR + 4x 10k resistor | Light, one at each corner | ~$2 |
+| [ ] | MAX7219 8x8 matrix | The face | ~$6 |
+| [ ] | HC-SR04 ultrasonic | Obstacles, and "something is close" | ~$3 |
+| [ ] | TTP223 touch module | A pat on the pot rim | ~$1 |
+| [ ] | TCRT5000 reflectance module | Cliff detection. **Not optional - stairs.** | ~$1 |
+| [ ] | PCF8574 I2C expander | Keeps A4/A5 free for the sensor bus | ~$1 |
+| [ ] | 4xAA holder with leads | Motor power, into EXT_PWR | ~$1.50 |
+| | **Per robot** | | **~$16** |
+| | **Five robots** | | **~$80** |
 
-Cliff sensors are not optional. Stairs will destroy this robot.
+## Per robot - inferring people
 
-### Why the expander moved forward a phase
+Deferred until the swarm moves on light alone, but ordered at the same time
+since shipping takes weeks. See "Inference over instrumentation" in
+[`concept.md`](concept.md).
 
-Four LDRs take A0 to A3. The ultrasonic takes D2, and the matrix takes D9, D10
-and D13. That accounts for everything except A4 and A5 - the I2C pins.
-
-So the cliff sensors already have nowhere to go. They could be squeezed onto
-A4 and A5 as plain digital inputs, but then the PIR and touch pad in Phase 3
-have nowhere, and A4/A5 have to be handed back to I2C anyway.
-
-Cheaper and far less confusing to buy the expander now and put everything from
-the cliff sensors onward on the bus, rather than wiring things twice.
-
----
-
-## Phase 3 - affection
-
-| | Item | Notes | Est. |
+| | Item | Why | Est. |
 |---|---|---|---|
-| [ ] | PIR motion sensor module | Detects warm moving bodies, so it distinguishes a person from a chair | ~$10 |
-| [ ] | Capacitive touch module | TTP223 type | ~$5 |
-| [ ] | Copper tape or aluminium foil | The touch pad on the pot rim | ~$8 |
+| [ ] | MLX90614 IR thermometer | Warm body at close range | ~$6 |
+| [ ] | AHT20 temp + humidity | Exhaled breath is warm and damp | ~$2 |
+| [ ] | Sound module (digital out) | Conversation means people | ~$1 |
+| | **Five robots** | | **~$45** |
 
----
+Both I2C parts join the bus on A4/A5. The sound module uses its digital output on
+the expander, because every analogue pin is taken by the LDRs.
 
-## Phase 5 - the sensor bus
+## If you need bodies
 
-All of these speak I2C, so they share two wires rather than needing a pin each.
-
-| | Item | Notes | Est. |
-|---|---|---|---|
-| [ ] | AHT20 or SHT31 breakout | Humidity **and** temperature in one part | ~$12 |
-| [ ] | BH1750 or VEML7700 breakout | Real lux, so targets can be in actual units | ~$10 |
-| [ ] | LTR390 UV breakout | Tells direct sun from a bright wall. What lets the orchid flee sunbeams. | ~$14 |
-
----
-
-## Phase 6 - the second robot
-
-A complete duplicate. This is the expensive phase.
-
-| | Item | Est. |
+| | Item | Est. each |
 |---|---|---|
-| [ ] | Arduino UNO R3 clone | ~$30 |
-| [ ] | Motor shield v1 clone | ~$15 |
-| [ ] | 2WD chassis, XC4472 | ~$25 |
-| [ ] | 8x8 matrix, XC4499 | ~$20 |
-| [ ] | Second set of every sensor above | ~$90 |
-| [ ] | Battery holder and cells | ~$25 |
+| [ ] | 2WD chassis kit with motors and wheels | ~$10 |
+| [ ] | Motor shield v1 clone | ~$3 |
 
-### The plants themselves
+## Power
+
+| | Item | Notes | Est. |
+|---|---|---|---|
+| [ ] | 20x rechargeable AA + charger | Five robots, four cells each. **Nearly as much as the sensors.** | ~$70 |
+
+## The plants
 
 | | Item | Notes |
 |---|---|---|
-| [ ] | Jade plant, *Crassula ovata* | Plant A. Wants full sun, dry, warm. Very hard to kill. |
-| [ ] | Moth orchid, *Phalaenopsis* | Plant B. Wants bright shade, humid, cool nights. |
-| [ ] | 2x **plastic** pots | Not terracotta. The TT motors have limited payload and a jade in terracotta can pass a kilogram before soil. |
-| [ ] | Orchid bark mix | Orchids are epiphytes. They do not grow in soil. |
+| [ ] | Five plants, mixed | Different species make different temperaments legible |
+| [ ] | Five **plastic** pots | Not terracotta. The TT motors have limited payload. |
+
+Worth including one CAM plant - an orchid or a succulent. CAM plants take in CO2
+at **night**, so it would hunt people after dark and light during the day, on an
+inverted schedule. Real biology, visibly different behaviour, no code change.
 
 ---
 
-## Phase 7 and experiments
+## Deferred, deliberately
 
-| | Item | For |
+| Item | Est. | Why not yet |
 |---|---|---|
-| [ ] | HX711 amplifier + small load cell | Thirst by weight. How growers actually check an orchid - they pick it up. |
-| [ ] | TCS34725 colour sensor | Reading root colour. Orchid roots go silver when thirsty, green when watered. |
-| [ ] | IR LED + TSOP38238 receiver | Virtual wall beacon for doorways, the way a Roomba does it. |
-
----
-
-## Practical things worth having
-
-| | Item | Why |
-|---|---|---|
-| [ ] | Black gaffer tape | Boundary lines for the cliff sensors to read |
-| [ ] | Long USB-B cable, 3 m | Tethered testing without crawling about |
-| [ ] | Velcro straps and zip ties | Mounting the pot and dressing the wiring |
-| [ ] | Spare TT gear motors | The plastic gears are the first thing to fail |
-| [ ] | Heat shrink and a decent side cutter | Wiring that survives being driven into furniture |
+| SCD40 NDIR CO2 sensor | $30 ea | See `concept.md` - inference is the better position, and $150 is the largest single line in the project |
+| Load cell + HX711 | $5 ea | Only earns its place for a plant in bark |
+| Colour sensor | $4 ea | Root-colour reading. Interesting, hardest to execute. |
+| Radio modules | $2 ea | **Rejected on principle.** The swarm's arrangement is the shared data. |
 
 ---
 
 ## Rough budget
 
-| Stage | Est. |
+| | Est. |
 |---|---|
-| Phases 2-3, first robot complete | **~$116** |
-| Phase 5 sensors | **~$36** |
-| Phase 6, second robot and both plants | **~$230** |
-| Experiments and consumables | **~$80** |
+| Core build, five robots | ~$80 |
+| People-inference sensors, five robots | ~$45 |
+| Four more chassis and shields, if needed | ~$52 |
+| Batteries and charger | ~$70 |
+| Plants and pots | ~$60 |
+| **Total** | **~$307** |
 
-Again: estimates, not a quote. Check prices before committing.
+Against roughly $500 for the two-robot version with NDIR sensors. Five plants,
+cheaper, and a better argument.
 
 ---
 
-## Open questions before you buy
+## Avoid
 
-**Three LDRs or four?** The code this project started from uses four, one at each
-corner, which gives the robot 360-degree awareness - it can tell that light is
-*behind* it. Three forward-facing sensors cannot; they only see a gradient
-ahead.
-
-Four is arguably the better arrangement, but it costs pin A3, which the current
-plan gives to the ultrasonic echo. Worth deciding before Phase 2, because it
-changes the pin map. See [`design-notes.md`](design-notes.md).
+**MQ-135**, sold everywhere as a CO2 sensor for about $3. It measures tin-oxide
+resistance and responds to alcohol, smoke and VOCs. The CO2 figure is inferred
+from a relationship that does not hold indoors. For work that will be examined,
+a sensor that responds to hand sanitiser is a liability. **CCS811** and **SGP30**
+report "eCO2" - estimated, not measured - and are at least honest about it.

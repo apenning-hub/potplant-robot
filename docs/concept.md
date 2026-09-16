@@ -117,3 +117,86 @@ than intelligence that is centrally coordinated and described as distributed.
 physically weak for CO2 - five small plants will not measurably change a room's
 ppm. Any claim about the swarm altering the atmosphere would not survive
 measurement. Their effect is spatial, not chemical, and the work should say so.
+
+---
+
+## Inference over instrumentation
+
+**Decision: the swarm infers the presence of people from cheap, unreliable
+sensors rather than measuring CO2 with an NDIR instrument.**
+
+This is a position, not a budget compromise, and the work should say so.
+
+A real orchid does not own a $30 photoacoustic instrument. It has cheap, noisy,
+evolved heuristics - stomatal conductance, water potential, light quality - and
+infers its way to a decent guess. Building the robot the same way is better
+biomimicry than giving a plant laboratory-grade instrumentation. Buy the NDIR
+sensor and the plant knows something no plant knows.
+
+**The robot infers people, not ppm.** That distinction should be stated openly.
+Since indoor CO2 comes from human breath, a reliable people-detector is a usable
+CO2 proxy - and the gap between the proxy and the thing itself is where the
+interest lies.
+
+### The proxies, and what each is honestly worth
+
+| Sensor | ~Cost | Signal | Honest limit |
+|---|---|---|---|
+| **MLX90614** IR thermometer | $6 | A person is warmer than a wall | **Short range only.** A person at 3 m fills a fraction of the field of view and averages out against the background. Reliable under a metre. |
+| **AHT20** temp + humidity | $2 | Exhaled breath is warm and humid; local RH rises near people | Slow - a minute or more to register. Reports on *here*, not *there*. |
+| Sound module | $1 | Talking means people, and talking people breathe hard | Not directional. A television is indistinguishable from a conversation. |
+| Four LDRs (already fitted) | - | A shadow crossing a sensor means something passed | Very crude |
+| Ultrasonic (already fitted) | - | Something is at 60 cm | Does not say what |
+
+About **$9 per robot, $45 for five**, against roughly $150 for NDIR.
+
+Both the MLX90614 and the AHT20 are I2C and join the bus already reserved on
+A4/A5. The sound module must use its **digital** output on the expander, since
+every analogue pin is taken by the LDRs - which costs amplitude and keeps
+presence. Counting pulses over time is enough to answer "is there conversation
+here", which is the only question being asked of it.
+
+### The one fusion that genuinely works
+
+**Ultrasonic says something is close. IR says it is warm. Close plus warm is a
+person.** A reliable person-detector under a metre, from two cheap parts.
+
+### The behavioural consequence
+
+**None of these proxies are directional.** They report on *here*, never on
+*which way*. So the robot cannot climb a CO2 gradient the way it climbs a light
+gradient.
+
+The behaviour therefore has to be **wander, evaluate, and stay where it is
+good** - occupy and persist rather than pursue.
+
+This is far more plant-like than a robot driving purposefully at a human. Plants
+do not walk towards things; they grow where conditions suit and die back where
+they do not. The crude sensing forces a truer behaviour than the expensive
+sensing would have. The limitation improved the work.
+
+### Aggregation without communication
+
+Five robots with bad sensors, spread through a room, should in principle average
+out into good data. But aggregation normally requires the robots to share what
+they know - and distributed intelligence routed through a radio network has a
+coordinator, which is precisely the claim this project is trying not to make.
+
+**The resolution: the swarm's physical arrangement is the aggregated data.**
+
+No robot holds the map. Each wanders, evaluates locally with unreliable sensors,
+and stays where conditions are good. After an hour, where the plants are standing
+*is* the room's CO2 map - readable by anyone who walks in, held in no memory,
+computed by nobody.
+
+Five bad sensors, averaged across space and time, rendered as an arrangement of
+objects. Aggregation without communication.
+
+### Keep the false positives
+
+These proxies will be wrong. A radiator reads as a person. A sunlit patch reads
+warm. The television talks.
+
+Do not engineer this out. A plant that has mistaken a radiator for a human and
+settled down hopefully beside it makes the inference visible, and is more honest
+than a robot that always gets it right.
