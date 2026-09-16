@@ -1,8 +1,12 @@
 # Pot Plant Robot
 
 A pot plant on a two-wheel chassis that roams an indoor room looking after
-itself. It seeks out light, wants attention, asks to be watered, and rests when
-it is tired. It shows how it is feeling on an 8x8 LED face.
+itself. It hunts for the light it prefers, wants attention, asks to be watered,
+and rests when it is tired. It shows how it is feeling on an 8x8 LED face.
+
+Eventually there are **two** of them running identical firmware - a sun-loving
+jade and a shade-loving orchid - which behave completely differently because one
+file of numbers differs. That is the point of the whole thing.
 
 Written to be read by someone who has not done this before.
 
@@ -10,6 +14,7 @@ Written to be read by someone who has not done this before.
 
     firmware/potplant/    the code that runs on the Arduino
     docs/wiring.md        how to wire it up
+    docs/design-notes.md  why things are shaped the way they are
     sim/                  a web page for tuning its personality (Phase 4)
     tools/                a face editor and a telemetry plotter (later phases)
 
@@ -84,9 +89,14 @@ Some good first experiments:
 
 ## Phases
 
-1. **Light seeker** - motors and light sensors only. *(current)*
-2. Obstacle avoidance, the needs model, and the LED face.
-3. Affection - motion and touch sensors. Sulking and hearts.
-4. Water, and the personality tuning simulator.
-5. Temperature and soil moisture. Runs out of pins here.
-6. Mount the real pot and tune it in the actual room.
+1. **Light seeker** - motors and light sensors only. *(built)*
+2. Obstacles, **cliff detection**, the needs model, and the LED face.
+   The light need seeks a *target* brightness from the start, not a maximum.
+3. Affection - touch and motion. A pat is worth far more than company.
+4. Water, and the personality simulator - now showing two plants side by side.
+5. The I2C sensor bus - humidity, temperature, real lux, UV.
+6. Two chassis. A jade and an orchid, same binary, two `tuning.h` files.
+7. The orchid's flowering quest - a need measured in weeks.
+
+See [`docs/design-notes.md`](docs/design-notes.md) for why the phases are shaped
+this way, and what was deliberately rejected.

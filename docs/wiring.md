@@ -110,7 +110,15 @@ Every pin on the UNO, accounted for. Phase 1 uses the ones marked "now".
 | D0, D1 | USB serial - never use | always |
 | M1, M2 | left and right motors | now |
 
-That is the lot. There is no spare pin for the temperature and soil moisture
-sensors in Phase 5, which is the point at which we stop and talk about moving to
-an Arduino Mega. The shield stacks onto a Mega unchanged, and because every pin
-assignment lives in `config.h`, that move is a one-file change.
+That is the lot for Phase 1 to 3.
+
+Phases 4 onward need more: two downward cliff sensors, humidity, temperature,
+real lux and UV. There is no spare pin for any of them.
+
+The likely answer is **not** a bigger board. Nearly all of those sensors speak
+I2C, and I2C is a bus - several sensors share the same two wires, A4 and A5. A
+small expander chip hands back the pins those two currently use. See
+[`design-notes.md`](design-notes.md) for the working.
+
+If it does come to a Mega, the shield stacks on one unchanged, and because every
+pin assignment lives in `config.h`, that move is a one-file change.
