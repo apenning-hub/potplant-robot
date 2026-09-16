@@ -10,7 +10,11 @@ constants differs between them - which is the point.
 
 Because indoor CO2 comes from human breath rather than from plants, a
 CO2-seeking plant seeks out *people*. The approach is gas exchange, not
-affection. See [`docs/concept.md`](docs/concept.md).
+affection.
+
+Five needs, each known a different way - one measured, one inferred, one
+delegated to a human, one internal, and one with no biological basis at all.
+See [`docs/concept.md`](docs/concept.md).
 
 Written to be read by someone who has not done this before.
 

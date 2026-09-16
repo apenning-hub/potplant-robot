@@ -200,3 +200,58 @@ warm. The television talks.
 Do not engineer this out. A plant that has mistaken a radiator for a human and
 settled down hopefully beside it makes the inference visible, and is more honest
 than a robot that always gets it right.
+
+---
+
+## The fifth need has no biological basis
+
+A recording, *Plantsia*, plays continuously in the installation. Units carry a
+need for it and will settle near the speaker and remain there.
+
+**Light, carbon, water and rest are physiology. Music is a belief.** The model
+does not distinguish between them, and that is the point. A unit weighing its
+need for music against its need for light is weighing a fact against a wish, and
+cannot tell which is which.
+
+The reference is Mort Garson's *Mother Earth's Plantasia*, 1976 - subtitled "warm
+earth music for plants and the people who love them" and composed on the premise
+that plants respond to it. A plant seeking out music written for plants closes
+that loop of projection rather than resolving it.
+
+**Implementation rule: the music need must not be marked in the code as different
+from the others**, and must be disabled the same way - by setting a constant to
+zero. If it needs special handling, the point has been lost.
+
+### Five ways of knowing
+
+The needs diagram is really about epistemics rather than wiring. Each need is
+known by a different means, and the asymmetry is the design.
+
+| Need | Known by | How |
+|---|---|---|
+| Light | **Measured** | Four LDRs. Direct, and the only directional sense the unit has. |
+| Carbon | **Inferred** | Four weak, non-directional signals combined. Never measured. |
+| Water | **Delegated** | To a human, who presses the pad. The plant has no water sensor. You are it. |
+| Rest | **Internal** | Elapsed motor running time. No sensor at all. |
+| Music | **Attributed** | No biological basis. A human belief about what plants want. |
+
+### Telling music from conversation
+
+The sound module reports only loud or quiet. The discriminator is not frequency -
+which an ATmega328P cannot afford - but **duty cycle**, counted over roughly
+thirty seconds:
+
+| Sound | Reading | Duty |
+|---|---|---|
+| Continuous | Music | > 80% |
+| Intermittent, turn-taking | Conversation, therefore people, therefore carbon | 30-70% |
+| Little or none | Empty | < 15% |
+
+Three states from one digital pin and a counter, at no extra cost. The sound
+module therefore carries a second duty, as the ultrasonic does for obstacles.
+
+Like every other proxy it is **not directional**. The unit samples loudness as it
+moves and returns to where it was louder - the same wander, evaluate and remain
+behaviour the carbon need already requires. A second microphone would give crude
+left-right discrimination across the chassis width, but the baseline is short and
+the result noisy. Not recommended.
